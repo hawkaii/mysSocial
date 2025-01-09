@@ -29,6 +29,18 @@ const profileSchema = new Schema({
 		type: Date,
 		default: null,
 	},
+	profilePicInfoId: {
+		type: String,
+		default: null,
+	},
+	profilePicLowQualityURL: {
+		type: String,
+		default: null,
+	},
+	profilePicMediumQualityURL: {
+		type: String,
+		default: null,
+	},
 	userId: {
 		type: Number, // Assuming that userId is an integer from your SQL DB
 		unique: true,

@@ -97,12 +97,11 @@ const userServices = {
 	uploadImages: async (images,userId)=>{
 		try {
 			const filesData = images.map(file => ({
-				filename: file.filename,
-				path: file.path,
 				size: file.size,
 				mimetype:file.mimetype,
 				originalname:file.originalname,
-				destination:file.destination,
+				highlyCompressedPath: file.highlyCompressedPath,
+       			mediumCompressedPath: file.mediumCompressedPath,
 				userId
 			  }));
 			return await FileManager.insertMany(filesData);

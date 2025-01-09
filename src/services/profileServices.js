@@ -23,8 +23,8 @@ const profileServices = {
 		try {
 			let profile = await Profile.findOne({ userId });
 			let fileDetail
-			if(image){
-				fileDetail = await userServices.uploadImages([image],userId);
+			if(image && image?.length>0){
+				fileDetail = await userServices.uploadImages(image,userId);
 			}
 			if (profile) {
 				// Update existing profile
@@ -33,15 +33,16 @@ const profileServices = {
 				if (birthday) profile.birthday = birthday;
 				if (location) profile.location = location;
 				if (fileDetail) {
-					profile.profilePicUploadId = fileDetail[0]._id;
-					profile.profilePicUrl = 'uploads/'+fileDetail[0].filename;
+					profile.profilePicInfoId = fileDetail[0]._id;
+					profile.profilePicLowQualityURL = fileDetail[0].highlyCompressedPath;
+					profile.profilePicMediumQualityURL = fileDetail[0].mediumCompressedPath;
 				}
 				profile.updatedAt = new Date();
 				profile = await profile.save();
 				return { message: 'Profile updated', profile };
 			} else {
 				// Create new profile
-				profile = new Profile({ userId, username, profession, birthday, location, createdAt: new Date(), updatedAt: new Date(),profilePicUploadId:fileDetail[0]._id, profilePicUrl:'uploads/'+fileDetail[0].filename });
+				profile = new Profile({ userId, username, profession, birthday, location, createdAt: new Date(), updatedAt: new Date(),profilePicInfoId:fileDetail[0]._id,profilePicLowQualityURL:fileDetail[0].highlyCompressedPath, profilePicMediumQualityURL: fileDetail[0].mediumCompressedPath });
 				profile = await profile.save();
 				return { message: 'Profile created', profile };
 			}
@@ -212,19 +213,20 @@ const profileServices = {
 
 	createPost: async (postData) => {
 		try {
-			let { imageURL, publicId, caption, author, profileId, userId, type, data, mentions, image } = postData;
+			let { imageURL, publicId, caption, author, profileId, userId, type, data, mentions, image,imageInfoIds,lowQualityImageURLs,mediumQualityImageURLs } = postData;
 
 			const profile = await Profile.findById(profileId);
 			if (!profile) {
 				throw new Error('Profile not found');
 			}
 			let fileDetail
-			if(image){
+			if(image && image?.length >0){
 				fileDetail = await userServices.uploadImages(image,userId);
 			}
 			if (fileDetail) {
-				publicId = fileDetail[0]._id;
-				imageURL = 'uploads/'+fileDetail[0].filename;
+				imageInfoIds = fileDetail.map(deatils=>deatils._id);
+				lowQualityImageURLs = fileDetail.map(deatils=>deatils.highlyCompressedPath);
+				mediumQualityImageURLs = fileDetail.map(deatils=>deatils.mediumCompressedPath);
 			}
 			let post;
 			switch (type) {
@@ -239,6 +241,9 @@ const profileServices = {
 						mentions: mentions || [],
 						comments: data.comments || [],
 						likes: data.likes || [],
+						lowQualityImageURLs,
+						mediumQualityImageURLs,
+						imageInfoIds
 					});
 					break;
 				case 'requirement':
@@ -252,6 +257,9 @@ const profileServices = {
 						description: data.description,
 						location: data.location,
 						profession: data.profession,
+						lowQualityImageURLs,
+						mediumQualityImageURLs,
+						imageInfoIds
 					});
 					break;
 				case 'moment':
@@ -262,6 +270,9 @@ const profileServices = {
 						profileId: profileId,
 						userId: userId,
 						momentDetails: data.momentDetails,
+						lowQualityImageURLs,
+						mediumQualityImageURLs,
+						imageInfoIds
 					});
 					break;
 				default:
@@ -295,7 +306,7 @@ const profileServices = {
 				.sort({ createdAt: -1 })
 				.populate('likes')
 				.populate({
-					path: 'comments',
+					path: 'comment',
 					populate: {
 						path: 'profile likes',
 					},
@@ -315,7 +326,7 @@ const profileServices = {
 				.sort({ createdAt: -1 })
 				.populate('likes')
 				.populate({
-					path: 'comments',
+					path: 'comment',
 					populate: {
 						path: 'profile likes',
 					},

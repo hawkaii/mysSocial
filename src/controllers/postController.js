@@ -37,6 +37,17 @@ const postController = {
 			res.status(500).json({ message: error.message });
 		}
 	},
+	createComment: async (req, res) => {
+		const { body } = req.body;
+		const postId = req.params.id;
+		const profileId = req.user.profileId;
+		try {
+			const comment = await postServices.createComment(postId, profileId, body);
+			res.status(201).json(comment);
+		} catch (error) {
+			res.status(500).json({ message: error.message });
+		}
+	},
 };
 
 export default postController;

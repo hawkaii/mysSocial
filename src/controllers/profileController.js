@@ -54,7 +54,7 @@ const profileController = {
 	createAndUpdateProfile: async (req, res) => {
 		const { username, profession, birthday, latitude, longitude, city } = req.body;
 		const userId = req.user.id; // Assuming req.user is set by your authentication middleware
-		const {file:image} = req;
+		const {files:image} = req;
 		if (!username) {
 			return res.status(400).json({ message: 'Username is required' });
 		}

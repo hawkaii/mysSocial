@@ -1,7 +1,7 @@
 import express from 'express';
 import profileController from '../controllers/profileController.js';
 import { verifyAuthentication } from '../passport/passport.js'; // import verifyAuthentication from passport.js
-import { uploadFile } from '../middleware/fileUploader.js';
+import { uploadAndCompress, uploadMultipleFiles } from '../middleware/fileUploader.js';
 const router = express.Router();
 
 router.get('/profiles/current', verifyAuthentication, profileController.getCurrentProfile);
@@ -11,10 +11,10 @@ router.get('/profiles', verifyAuthentication, profileController.getProfiles);
 router.get('/profiles/:id', verifyAuthentication, profileController.getProfile);
 
 router.post('/profiles/follows', verifyAuthentication, profileController.followProfile);
-router.post('/profiles', verifyAuthentication,uploadFile, profileController.createAndUpdateProfile);
+router.post('/profiles', verifyAuthentication,uploadMultipleFiles, uploadAndCompress ,profileController.createAndUpdateProfile);
 router.post('/profiles/experience', verifyAuthentication, profileController.createExperience);
 
-router.put('/profiles', verifyAuthentication,uploadFile, profileController.createAndUpdateProfile);
+router.put('/profiles', verifyAuthentication,uploadMultipleFiles,uploadAndCompress, profileController.createAndUpdateProfile);
 
 router.delete('/profiles/follows', verifyAuthentication, profileController.unfollowProfile);
 router.delete('/profiles/:id', verifyAuthentication, profileController.deleteProfile);

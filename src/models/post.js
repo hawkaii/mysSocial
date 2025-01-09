@@ -41,6 +41,18 @@ const PostSchema = new Schema({
 		type: Date,
 		default: Date.now,
 	},
+	lowQualityImageURLs: {
+		type: [String],
+		required: false,
+	},
+	mediumQualityImageURLs: {
+		type: [String],
+		required: false,
+	},
+	imageInfoIds: {
+		type: [String],
+		default: null,
+	}
 }, baseOptions);
 
 const Post = mongoose.model('Post', PostSchema);

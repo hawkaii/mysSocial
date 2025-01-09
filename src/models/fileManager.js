@@ -5,12 +5,11 @@ const { Schema } = mongoose;
 
 const fileManagerSchema = new mongoose.Schema(
     {
-      filename: { type: String, required: true },
       mimetype: { type: String, required: true },
-      path: { type: String, required: true },
       originalname: { type: String, required: true },
       size: { type: Number },
-      destination: { type: String, required: true},
+      mediumCompressedPath: { type: String, required: true},
+      highlyCompressedPath: { type: String, required: true},
       userId: {
         type: Number
       }

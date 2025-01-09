@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import PostLike from "../models/postLike.js";
 import { Post } from "../models/post.js";
 import { Profile } from "../models/profile.js";
+import { Comment } from "../models/comment.js";
 
 const postServices = {
 	// Like a post
@@ -51,6 +52,41 @@ const postServices = {
 			throw new Error('Failed to fetch post likes');
 		}
 	},
+	createComment: async (postId, profileId, body) => {
+		try {
+			const post = await Post.findById(postId);
+			if (!post) {
+				throw new Error('Post not found');
+			}
+
+			const comment = new Comment({ postId, profileId, body });
+			await comment.save();
+
+			post.comments.push(comment._id);
+			await post.save();
+			return comment;
+		} catch (error) {
+			console.error(error);
+			throw new Error(`Failed to create comment: ${error.message}`);
+		}
+	},
+	editComment: async (commentId, profileId, body) => {
+		try {
+			const comment = await Comment.findById(commentId);
+			if (!comment) {
+				throw new Error('Comment not found');
+			}
+			if (comment.profileId.toString() !== profileId) {
+				throw new Error('You are not authorized to edit this comment');
+			}
+			comment.body = body;
+			await comment.save();
+			return comment;
+		} catch (error) {
+			console.error(error);
+			throw new Error(`Failed to edit comment: ${error.message}`);
+		}
+	}
 };
 
 export default postServices;

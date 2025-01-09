@@ -202,7 +202,7 @@ const userController = {
 		if (!username || !profession || !fullName || !password || (!mobileNumber && !email)) {
 			return res.status(400).json({ message: 'All fields are required' });
 		}
-		const {file: image} = req;
+		const {files: image} = req;
 		const session = await mongoose.startSession();
 		session.startTransaction();
 

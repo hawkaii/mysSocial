@@ -8,7 +8,7 @@ import {
 	signin,
 	verifyAuthentication,
 } from '../passport/passport.js';
-import { uploadFile } from '../middleware/fileUploader.js';
+import { uploadAndCompress, uploadMultipleFiles } from '../middleware/fileUploader.js';
 const router = express.Router();
 
 router.get('/status', (req, res) =>
@@ -27,7 +27,7 @@ router.post(
 router.get('/auth/status', sendAuthStatus);
 
 
-router.post('/auth/signup', userController.validateUserProfile, uploadFile, userController.createAndUpdateProfile);
+router.post('/auth/signup', userController.validateUserProfile, uploadMultipleFiles,uploadAndCompress, userController.createAndUpdateProfile);
 
 
 export default router;
